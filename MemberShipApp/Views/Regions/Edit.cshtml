@@ -1,0 +1,110 @@
+﻿@model MemberShipApp.Models.RegionDto
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>Region</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.HiddenFor(m => m.RegionID)
+            <div class="form-group">
+                <label asp-for="CountryID" class="control-label"></label>
+                <select asp-for="CountryID" class="form-control" asp-items="ViewBag.CountryID"></select>
+                <span asp-validation-for="CountryID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width:10%" scope="col" colspan="6">States Assigned to @Model.Name region</th>
+                            @*<th style="width:15%" scope="col"></th>
+                                <th style="width:10%" scope="col"></th>
+                                <th style="width:10%" scope="col"></th>
+                                <th style="width:10%" scope="col"></th>
+                                <th style="width:10%" scope="col"></th>
+                                <th style="width:15%" scope="col"></th>*@
+                        </tr>
+                    </thead>
+                    <tr>
+                        @{
+                            int iState = 0;
+                            StateDto[] states = ViewBag.States;
+                            int statesCount = states.Count();
+                            int satesOverflowColumns = statesCount % 6;
+                            int cnt = 0;
+                            for (int iCol = 1; iCol <= 6; ++iCol)
+                            {
+                                int chunkSize = statesCount / 6 + (satesOverflowColumns > 0 && iCol <= satesOverflowColumns ? 1 : 0);
+                                <td>
+                                    @for (int i = 0; iState < statesCount && i < chunkSize; ++iState, ++i)
+                                    {
+                                        bool isChecked = Model.StateIDs.Select(s => s.ID).ToList().Contains(states[iState].StateID);
+                                       
+                                        <input type="checkbox" name="States" value="@states[iState].StateID" checked="@isChecked" /> @states[iState].Name<br />
+                                    }
+                                </td>
+                            }
+                        }
+                    </tr>
+                </table>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Save" onclick="Submit()" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+        function Submit() {
+            var form = $("form");
+            var counter = 0;
+            var favorite = [];
+            $.each($("input[name='States']:checked"), function () {
+                //favorite.push($(this).val());
+                //form.append("<input type='hidden' asp-for='StateIDs[ " + (counter) + "].ID' value='" + $(this).val() + "'/>")
+                //form.append("<input type='hidden' asp-for='StateIDs[ " + (counter) + "].Name' value='" + $(this).val() + "' />")
+                //counter++;
+                form.append("<input type='hidden' name='StateIDs[" + (counter++) +"].ID' value='" + $(this).val() + "'/>");
+            });
+           
+
+                    
+            form.submit();
+        }
+
+
+
+    </script>
+}

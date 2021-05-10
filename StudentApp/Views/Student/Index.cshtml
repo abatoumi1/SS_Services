@@ -1,0 +1,78 @@
+﻿@model IEnumerable<StudentViewModel>
+@using StudentApp.Models
+
+
+<div class="top-buffer"></div>
+<div class="panel panel-primary">
+    <div class="panel-heading panel-head"> <h1 class="panel-title">Student</h1> </div>
+    <div class="panel-body">
+        <div class="btn-group">
+            @*<a id="createEditStudentModal" data-toggle="modal" asp-controller="Student" asp-action="AddEditStudent" data-target="#modal-action-student" class="btn btn-primary">
+                    Add Student
+                </a>*@
+            <a id="createEditStudentModal" onclick="create()" class="btn btn-primary">
+                Add Student
+            </a>
+        </div>
+        <div class="top-buffer"></div>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Enrollment No</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.EnrollmentNo)</td>
+                        <td>
+                            <a id="editStudentModal"   onclick="create(@item.Id)"
+                               class="btn btn-info">
+                                Edit
+                            </a>
+                            <a id="deleteStudentModal" onclick="delete(@item.Id)" class="btn btn-danger">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@await Html.PartialAsync("../Shared/_Modal",
+                                    new BootstrapModel
+                                    {
+                                        ID = "modal-action-student",
+                                        AreaLabeledId = "modal-action-student-label",
+                                        Size = ModalSize.Medium
+                                    })
+@*<script src="~/js/student-index.js" asp-append-version="true">*@
+@section scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+        });
+
+    @*function create() {
+
+    $(".modal-content").load('@Url.Action("AddEditStudent", "Student")');
+    //$("#title").text("Member Registration Form");
+        $("#modal-action-student").modal('toggle');
+        }*@
+
+         function create(id) {
+           
+            $(".modal-content").load('@Url.Action("AddEditStudent", "Student")?id=' + id);
+            //$("#title").text("Update Member Information");
+             $("#modal-action-student").modal('toggle');
+        }
+    </script>
+}

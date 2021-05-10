@@ -1,7 +1,9 @@
-﻿@model IEnumerable<MemberShipApp.Models.State>
+﻿@model IEnumerable<MemberShipApp.Models.StateDto>
 
 @{
     ViewData["Title"] = "Index";
+    List<RegionDto> regionsList = ViewBag.Regions;
+    var regions = regionsList.ToDictionary(s => s.RegionID);
 }
 
 <h2>Index</h2>
@@ -19,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Region)
+               Region Name
             </th>
             <th></th>
         </tr>
@@ -34,7 +36,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Region.RegionID)
+                @regions[item.RegionID].Name
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.StateID">Edit</a> |

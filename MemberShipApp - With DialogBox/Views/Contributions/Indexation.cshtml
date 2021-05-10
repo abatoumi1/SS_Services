@@ -1,0 +1,280 @@
+﻿
+@model MemberShipApp.Models.MemberContributionView
+@{
+    ViewData["Title"] = "Index";
+    var error = ViewBag.Error;
+    var regions = Model.Countries.Where(b => b.CountryID == Model.SelectedCountryID).SelectMany(s => s.Regions);
+}
+<p><a onclick="create()">Create New Member</a></p>
+<p class="alert-danger"> @ViewBag.Error</p>
+<form id="formSelect">
+    <div>
+        <div class="col-md-3">
+            <div>Select Year</div>
+            <select id="year" class="form-control" asp-items="ViewBag.Years"></select>
+            @*<select class="form-control  bg-primary" id="selectYear"></select>*@
+        </div>
+        <div class="col-md-3">
+            <div>Select Country</div>
+            @Html.DropDownList("countryID",
+                                Model.Countries.Select(s => new SelectListItem
+                                     {
+                                         Text = s.Name,
+                                         Value = s.CountryID.ToString(),
+                                    Selected = s.CountryID == Model.SelectedCountryID
+                                     }).OrderBy(i => i.Text),
+                                 "- Please select your country -",
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     @name = "Countries"
+                                 }
+               )
+        </div>
+        <div class="col-md-3">
+            <div>Select Region</div>
+            <select id="selectRegion" class="form-control  bg-primary">
+                <option value="0">Search By Region</option>
+                @foreach (var region in regions)
+                {
+                    <option value="@region.RegionID">@region.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <div>Select State</div>
+            <select class="form-control  bg-primary" id="selectState">
+                <option value="0">Search By State</option>
+            </select>
+        </div>
+    </div>
+</form>
+<hr />
+<table  class="blueTable">
+    <thead>
+        <tr>
+            <th>
+                Last Name
+            </th>
+            <th>
+                First Name
+            </th>
+
+            <th>
+                Yearly Contribution
+            </th>
+            
+            <th>Total: $@Model.Members.Sum(s=>s.YearlyContribution)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Members)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.YearlyContribution)
+                </td>
+                <td>
+                    <a class="btn btn-info active" role="button" aria-pressed="true" onclick="contribute(@item.MemberID)">Contribute</a>
+                    @*<a class="btn btn-primary active" role="button" aria-pressed="true" onclick="edit(@item.MemberID)">Edit</a>*@
+                    <a class="btn btn-success active" role="button" aria-pressed="true" asp-action="Details" asp-route-id="@item.MemberID">Details</a>
+                    @*<a class="btn btn-danger active" role="button" aria-pressed="true" asp-action="Delete" asp-route-id="@item.MemberID">Delete</a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@*<div id="tableBody"></div>*@
+
+<partial name="~/Views/Shared/_PartialModal.cshtml" />
+
+@section scripts {
+    <script type="text/javascript">
+        var data = @Json.Serialize(@Model.SelectedMember);
+        var stripRegions = @Json.Serialize(regions);
+        var members = @Json.Serialize(@Model.Members);
+        console.log(stripRegions);
+        console.log(members);
+        $(document).ready(function () {
+            //populateYears();
+            //if (members.length != 0) {
+            //    $("#tableBody").load("/Members/IndexMember", { members });
+            //}
+            //else {
+            //    $("#tableBody").html("<h5>There is no member registered in " + $("#countryID option:selected").text() +"</h5>");
+            //}
+
+            if(data != null) {
+                var title = data.memberID != 0 ? "Update Member Information" : "Member Registration Form";
+                var isEdit = data.memberID != 0 ? true : false;
+                $("#modelContent").load("/Members/EditCreateMember", { data:data, isEdit:isEdit });
+                //$("#dialogSet").appendTo("body").css("z-index", "2000").focus();
+
+                $("#title").text(title);
+                $("#dialogSet").modal('show').focus();
+                //$("#dialogSet").appendTo("body");
+            }
+
+            $("#saveChanges").click(function () {
+                formValidation("#createEditContributionForm");
+            });
+
+            $("#countryID").on('change', function () {
+                var selectedValue = $("#year option:selected").val();
+                console.log(selectedValue);
+                var form = $("#formSelect");
+                form.append("<input type='hidden' name='year' value='" + selectedValue + "'/>");
+                form.submit();
+            });
+            $("#year").on('change', function () {
+                var selectedValue = $("#year option:selected").val();
+                console.log(selectedValue);
+                var form = $("#formSelect");
+                form.append("<input type='hidden' name='year' value='" + selectedValue + "'/>");
+                form.submit();
+            });
+            $("#selectRegion").on('change', function () {
+                var selectedValue = $("#selectRegion option:selected").val();
+                console.log(selectedValue);
+
+                $.each(stripRegions, function (index, value) {
+                    if (value.regionID === parseInt(selectedValue)) {
+                        var city = "<option value=" + '0' + "> Select State </option>";
+                        $("#selectState").html("");
+                        $.each(value.states, function (i, val) {
+                            city += '<option value="' + val.id + '">' + val.name + '</option>';
+                        });
+                        $("#selectState").html(city);
+                    }
+                });
+
+                //var newMembers = filter(selectedValue);
+                //if (newMembers.length != 0) {
+                //    $("#tableBody").load("/Members/IndexMember", { members: newMembers });
+                //}
+                //else {
+                //    $("#tableBody").html("<h5>There is no member registered for " + $("#selectRegion option:selected").text() + " region </h5>");
+                //}
+            });
+
+
+            $("#selectState").on('change', function () {
+                var selectedValue = $("#selectState option:selected").val();
+                console.log(selectedValue);
+                var newMembers = filter(selectedValue);
+                if (newMembers.length != 0) {
+                    $("#tableBody").load("/Members/IndexMember", { members: newMembers });
+                }
+                else {
+                    $("#tableBody").html("<h5>There is no member registered for " + $("#selectState option:selected").text() + " state</h5>");
+                }
+            });
+        });
+
+        function create() {
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("CreateMember","Members")');
+            $("#title").text("Member Registration Form");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function edit(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("EditMember","Members")?id=' + id);
+            $("#title").text("Update Member Information");
+            $("#dialogSet").modal('toggle');
+        }
+        function contribute(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("AddContribution","Contributions")?id=' + id);
+            $("#title").text("Member Contribution");
+            $("#dialogSet").modal('toggle');
+        }
+        function details(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", true);
+            $("#modelContent").load('@Url.Action("MemberDetails","Members")?id=' + id);
+            $("#title").text("Member Detail");
+            $("#dialogSet").modal('toggle');
+        }
+        function populateYears() {
+            var min = new Date().getFullYear()-10,
+                max = min + 10,
+                select = document.getElementById('selectYear');
+
+            for (var i = min; i <= max; i++) {
+                var opt = document.createElement('option');
+                opt.value = i;
+                opt.innerHTML = i;
+                select.appendChild(opt);
+            }
+        }
+        function filter(filterID) {
+            return newMembers = members.filter(function (member) {
+                return member.regionID == parseInt(filterID);
+            });
+        }
+
+        function formValidation($id) {
+                $($id).validate({
+                    submitHandler: function (form) {
+                        //submit once validation rules are met
+                        form.submit();
+                    },
+                    rules: {
+                        Amount: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        Amount: {
+                            required: "Amount is required",
+                            maxlength: "Error: The max length for First Name is 50."
+                        }
+                    },
+                    highlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                        $(id_attr).removeClass('glyphicon-ok').addClass('glyphicon-remove');
+                    },
+                    unhighlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        $(id_attr).removeClass('glyphicon-remove').addClass('glyphicon-ok');
+                    },
+                    errorElement: 'span',
+                    errorClass: 'help-block',
+                    errorPlacement: function (error, element) {
+                        if (element.length) {
+                            error.insertAfter(element);
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    }
+                });
+                var form = $($id);
+                console.log(form);
+                var $valid = form.valid();
+                if (!$valid) {
+                    return false;
+                }
+                form.submit();
+                form.submit(function (e) {
+                    var $valid = form.valid();
+                    if (!$valid) {
+                        return false;
+                    }
+                });
+        }
+    </script>
+}

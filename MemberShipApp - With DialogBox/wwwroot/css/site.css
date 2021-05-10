@@ -1,0 +1,395 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+body {
+    /*font-size: 1em;*/
+    font-family: "Segoe UI", Verdana, Sans-Serif;
+    color: #697878;
+    background-color: #2B6868;
+    width: 90%;
+    height: 100%;
+    margin-left: 5%;
+}
+
+header, footer, nav, section {
+    display: block;
+}
+.PrintExclude {
+    display: none !important;
+}
+
+.ui-front {
+    z-index: 10002 !important;
+}
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+/*.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}*/
+
+.body-content {
+    background: #eef;
+    display: block;
+    padding: 20px;
+    margin-top: 11%;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+.DataTable {
+    color: #111;
+}
+
+    .DataTable td, .DataTable th {
+        padding: 5px 12px;
+        vertical-align: middle;
+    }
+
+
+    .DataTable tr {
+        background-color: #cdd;
+    }
+
+        .DataTable tr:nth-of-type(even) {
+            background-color: #dee;
+        }
+
+    .DataTable th {
+        background-color: #d0570f;
+        color: #eff;
+    }
+
+#MenuBar > ul {
+    background: #0F9962;
+    list-style: none;
+    font-weight: bold;
+    margin-bottom: 10px;
+    float: left;
+    width: 100%;
+}
+
+    #MenuBar > ul > li {
+        float: left;
+        font-size: 1.50em;
+        margin-left: 10px;
+        position: relative;
+        z-index: 9999;
+    }
+
+    #MenuBar > ul ul {
+        background: #0F9962;
+        position: absolute;
+        list-style: none;
+        left: -9999px;
+    }
+
+        #MenuBar > ul ul li {
+            float: none;
+            z-index: 99;
+        }
+
+#MenuBar ul ul ul {
+    position: relative;
+}
+
+#MenuBar ul ul a {
+    font-size: 0.75em;
+}
+
+#MenuBar ul ul ul a {
+    font-size: 0.5em;
+    margin-left: 20px;
+}
+
+#MenuBar ul li:hover ul {
+    left: 0px;
+}
+
+#MenuBar a {
+    display: block;
+    padding: 5px;
+    color: #fff;
+    background: #0F9962;
+    text-decoration: none;
+}
+
+#MenuBar ul ul a {
+    white-space: nowrap;
+}
+
+#MenuBar > ul > li:hover > a {
+    text-decoration: none;
+}
+
+#MenuBar ul li:hover a {
+    background: #0F9962;
+}
+
+#MenuBar li:hover ul li a:hover {
+    background: blue;
+}
+
+#BannerBar {
+    background-image: url("/images/cmsmagazine_custom_logo.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #004990;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    height: 100px;
+}
+#DialogOverlay {
+    display: none;
+    position: fixed;
+    background-color: black;
+    opacity: 0.5;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    z-index: 10000;
+}
+
+#DialogLoading {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    background: url('/images/loading.gif') no-repeat;
+    -moz-background-size: 40px;
+    -o-background-size: 40px;
+    -webkit-background-size: 40px;
+    background-size: 40px;
+    z-index: 10001;
+}
+
+#Dialog {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-left: -150px;
+    margin-top: -150px;
+    width: 300px;
+    height: 150px;
+    background-color: #dfd;
+    border: 4px solid #223;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    z-index: 10002;
+    font-size: larger;
+}
+
+    #Dialog #DialogBody {
+        width: 100%;
+        height: 80%;
+    }
+
+    #Dialog #DialogButtons {
+        width: 100%;
+        height: 20%;
+    }
+
+    #Dialog a.Button:first-child {
+        float: left;
+    }
+
+    #Dialog a.Button {
+        float: right;
+    }
+/*body .modal-dialog { 
+    max-width: 100%;
+    width: auto !important;
+    display: inline-block;
+}
+.modal {
+    z-index: -1;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-open .modal {
+    z-index: 1050;
+}*/
+
+
+.modal-dialog {
+    position: relative;
+    display: table;
+    overflow: auto;
+    width: auto;
+    min-width: 300px;
+}
+
+/*.modal-body { 
+    overflow-x: auto !important;
+    max-width: 90vw !important;
+}*/
+.modal-header, h5, .close {
+    background-color: #5cb85c;
+    color: white !important;
+    text-align: center;
+    font-size: 30px;
+}
+/*.modal-body {
+    overflow-x: auto;
+}*/
+
+.modal-footer {
+    background-color: #f9f9f9;
+}
+
+
+.MembersTable {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .MembersTable td, .MembersTable th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .MembersTable tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .MembersTable tr:hover {
+        background-color: #ddd;
+    }
+
+    .MembersTable th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+
+
+table.blueTable {
+    border: 1px solid #1C6EA4;
+    background-color: #EEEEEE;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+    table.blueTable td, table.blueTable th {
+        border: 1px solid #AAAAAA;
+        padding: 3px 2px;
+    }
+
+    table.blueTable tbody td {
+        font-size: 13px;
+    }
+
+    table.blueTable tr:nth-child(even) {
+        background: #D0E4F5;
+    }
+
+    table.blueTable thead {
+        background: #1C6EA4;
+        background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+        background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+        background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+        border-bottom: 2px solid #444444;
+    }
+
+        table.blueTable thead th {
+            font-size: 15px;
+            font-weight: bold;
+            color: #FFFFFF;
+            border-left: 2px solid #D0E4F5;
+        }
+
+            table.blueTable thead th:first-child {
+                border-left: none;
+            }
+
+    table.blueTable tfoot {
+        font-size: 14px;
+        font-weight: bold;
+        color: #FFFFFF;
+        background: #D0E4F5;
+        background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+        background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+        background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+        border-top: 2px solid #444444;
+    }
+
+        table.blueTable tfoot td {
+            font-size: 14px;
+        }
+
+        table.blueTable tfoot .links {
+            text-align: right;
+        }
+
+            table.blueTable tfoot .links a {
+                display: inline-block;
+                background: #1C6EA4;
+                color: #FFFFFF;
+                padding: 2px 8px;
+                border-radius: 5px;
+            }
+
+/* Tab Navigation */
+.nav-tabs {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+    .nav-tabs > li > a {
+        background: #DADADA;
+        border-radius: 0;
+        box-shadow: inset 0 -8px 7px -9px rgba(0,0,0,.4),-2px -2px 5px -2px rgba(0,0,0,.4);
+    }
+
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover {
+        background: #F5F5F5;
+        box-shadow: inset 0 0 0 0 rgba(0,0,0,.4),-2px -3px 5px -2px rgba(0,0,0,.4);
+    }
+
+/* Tab Content */
+.tab-pane {
+    background: #F5F5F5;
+    box-shadow: 0 0 4px rgba(0,0,0,.4);
+    border-radius: 0;
+    text-align: center;
+    padding: 10px;
+}
+
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}

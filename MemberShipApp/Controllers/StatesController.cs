@@ -6,24 +6,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MemberShipApp.Models;
-using UniversityApp.Data;
+
+using MemberShipApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MemberShipApp.Controllers
 {
+    [Authorize]
     public class StatesController : Controller
     {
-        private readonly MemberShipContext _context;
-
-        public StatesController(MemberShipContext context)
+        private readonly IStateServices _stateService;
+        private readonly IRegionServices _regionService;
+        public StatesController(IStateServices stateService, IRegionServices regionService)
         {
-            _context = context;
+            _regionService = regionService;
+            _stateService = stateService;
         }
 
         // GET: States
         public async Task<IActionResult> Index()
         {
-            var memberShipContext = _context.States.Include(s => s.Region);
-            return View(await memberShipContext.ToListAsync());
+            var regions = await _regionService.GetAllRegions();
+            ViewData["Regions"] = regions;
+            var states = await _stateService.GetAllStates();
+            return View(states);
         }
 
         // GET: States/Details/5
@@ -34,9 +40,7 @@ namespace MemberShipApp.Controllers
                 return NotFound();
             }
 
-            var state = await _context.States
-                .Include(s => s.Region)
-                .FirstOrDefaultAsync(m => m.StateID == id);
+            var state = await _stateService.GetStateById(id.Value);
             if (state == null)
             {
                 return NotFound();
@@ -46,9 +50,9 @@ namespace MemberShipApp.Controllers
         }
 
         // GET: States/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["RegionID"] = new SelectList(_context.Regions, "RegionID", "RegionID");
+            ViewData["RegionID"] = new SelectList(await _regionService.GetAllRegions(), "RegionID", "Name");
             return View();
         }
 
@@ -57,15 +61,15 @@ namespace MemberShipApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StateID,RegionID,Code,Name")] State state)
+        public async Task<IActionResult> Create([Bind("StateID,RegionID,Code,Name")] StateDto state)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(state);
-                await _context.SaveChangesAsync();
+                
+                await _stateService.CreateState(state);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RegionID"] = new SelectList(_context.Regions, "RegionID", "RegionID", state.RegionID);
+            ViewData["RegionID"] = new SelectList(await _regionService.GetAllRegions(), "RegionID", "Name", state.RegionID);
             return View(state);
         }
 
@@ -77,12 +81,12 @@ namespace MemberShipApp.Controllers
                 return NotFound();
             }
 
-            var state = await _context.States.FindAsync(id);
+            var state = await _stateService.GetStateById(id.Value);
             if (state == null)
             {
                 return NotFound();
             }
-            ViewData["RegionID"] = new SelectList(_context.Regions, "RegionID", "RegionID", state.RegionID);
+            ViewData["RegionID"] = new SelectList(await _regionService.GetAllRegions(), "RegionID", "Name", state.RegionID);
             return View(state);
         }
 
@@ -91,7 +95,7 @@ namespace MemberShipApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StateID,RegionID,Code,Name")] State state)
+        public async Task<IActionResult> Edit(int id, [Bind("StateID,RegionID,Code,Name")] StateDto state)
         {
             if (id != state.StateID)
             {
@@ -102,23 +106,17 @@ namespace MemberShipApp.Controllers
             {
                 try
                 {
-                    _context.Update(state);
-                    await _context.SaveChangesAsync();
+                    await _stateService.UpdateState(id, state);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StateExists(state.StateID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
+                   
                         throw;
-                    }
+                    
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RegionID"] = new SelectList(_context.Regions, "RegionID", "RegionID", state.RegionID);
+            ViewData["RegionID"] = new SelectList(await _regionService.GetAllRegions(), "RegionID", "Name", state.RegionID);
             return View(state);
         }
 
@@ -129,10 +127,7 @@ namespace MemberShipApp.Controllers
             {
                 return NotFound();
             }
-
-            var state = await _context.States
-                .Include(s => s.Region)
-                .FirstOrDefaultAsync(m => m.StateID == id);
+            var state = await _stateService.GetStateById(id.Value);
             if (state == null)
             {
                 return NotFound();
@@ -146,15 +141,13 @@ namespace MemberShipApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var state = await _context.States.FindAsync(id);
-            _context.States.Remove(state);
-            await _context.SaveChangesAsync();
+            var state = await _stateService.DeleteState(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StateExists(int id)
-        {
-            return _context.States.Any(e => e.StateID == id);
-        }
+        //private bool StateExists(int id)
+        //{
+        //    return _context.States.Any(e => e.StateID == id);
+        //}
     }
 }

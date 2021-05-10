@@ -8,8 +8,8 @@ namespace MemberShipApp.Repositories
 {
     public interface ICountryRepository : IRepository<Country>
     {
-        Task<IEnumerable<Country>> GetAllWithRegionsAsync();
-       
-        
+        Task<IEnumerable<Country>> GetAllWithRegionsAndStatesAsync();
+
+        Task<Country> GetAllWithRegionsByIdAsync(int countryID);
     }
 }

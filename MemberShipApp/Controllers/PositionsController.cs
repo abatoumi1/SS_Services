@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MemberShipApp.Models;
-using UniversityApp.Data;
+using MemberShipApp.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MemberShipApp.Controllers
 {
+    [Authorize]
     public class PositionsController : Controller
     {
         private readonly MemberShipContext _context;

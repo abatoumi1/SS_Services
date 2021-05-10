@@ -1,0 +1,16 @@
+01/04/2021 19:46:01  Application Starting Up.
+01/04/2021 19:46:02  No type was specified for the decimal column '"Amount"' on entity type '"Contribution"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+01/04/2021 19:46:03  No type was specified for the decimal column '"Amount"' on entity type '"Contribution"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'ForHasColumnType()'.
+01/04/2021 19:46:05  HTTP "GET" "/" responded 200 in 420.2260 ms
+01/04/2021 19:46:09  HTTP "GET" "/Members" responded 200 in 753.7075 ms
+01/04/2021 19:46:09  HTTP "POST" "/Members/IndexMember" responded 200 in 89.9496 ms
+01/04/2021 19:46:13  HTTP "GET" "/Contributions/Indexation" responded 302 in 28.7504 ms
+01/04/2021 19:46:13  HTTP "GET" "/Identity/Account/Login?ReturnUrl=%2FContributions%2FIndexation" responded 200 in 165.7444 ms
+01/04/2021 19:46:17  HTTP "GET" "/Contributions/Indexation" responded 302 in 1.2459 ms
+01/04/2021 19:46:17  HTTP "GET" "/Identity/Account/Login?ReturnUrl=%2FContributions%2FIndexation" responded 200 in 3.9782 ms
+01/04/2021 19:46:24  HTTP "GET" "/Identity/Account/Login" responded 200 in 5.7147 ms
+01/04/2021 19:46:39  Invalid password for user "fb647397-e85e-4e2a-a478-0dcacc69f3dc".
+01/04/2021 19:46:39  User "fb647397-e85e-4e2a-a478-0dcacc69f3dc" failed to provide the correct password.
+01/04/2021 19:46:39  HTTP "POST" "/Identity/Account/Login" responded 200 in 147.4582 ms
+01/04/2021 19:46:52  HTTP "POST" "/Identity/Account/Login" responded 302 in 86.8843 ms
+01/04/2021 19:46:55  HTTP "GET" "/" responded 200 in 3203.7739 ms

@@ -22,14 +22,16 @@ namespace UniversityApp.Controllers
         // GET: Instructors
         public async Task<IActionResult> Index(int? id, int? courseID)
         {
-            var viewModel = new InstructorIndexData();
-            viewModel.Instructors = await _context.Instructors
+            var viewModel = new InstructorIndexData
+            {
+                Instructors = await _context.Instructors
                   .Include(i => i.OfficeAssignment)
                   .Include(i => i.CourseAssignments)
                     .ThenInclude(i => i.Course)
                         .ThenInclude(i => i.Department)
                   .OrderBy(i => i.LastName)
-                  .ToListAsync();
+                  .ToListAsync()
+            };
 
             if (id != null)
             {
@@ -75,8 +77,10 @@ namespace UniversityApp.Controllers
         // GET: Instructors/Create
         public IActionResult Create()
         {
-            var instructor = new Instructor();
-            instructor.CourseAssignments = new List<CourseAssignment>();
+            var instructor = new Instructor
+            {
+                CourseAssignments = new List<CourseAssignment>()
+            };
             PopulateAssignedCourseData(instructor);
             return View();
         }

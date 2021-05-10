@@ -66,7 +66,9 @@ namespace UniversityApp.Controllers
             }
 
             int pageSize = 3;
-            return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            var studs = await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize);
+            return View(studs);
         }
 
         // GET: Students/Details/5

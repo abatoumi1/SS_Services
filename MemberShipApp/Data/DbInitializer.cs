@@ -4,8 +4,6 @@ using MemberShipApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using UniversityApp.Data;
 
 namespace MemberShipApp.Data
 {
@@ -658,6 +656,50 @@ namespace MemberShipApp.Data
                 foreach (Member e in members)
                 {
                     context.Add(e);
+                }
+                context.SaveChanges();
+            }
+
+            /*******************/
+
+            var contributionMethods = new ContributionMethod[]
+            {
+                new ContributionMethod { Name = "Credit Card"},
+                new ContributionMethod { Name = "PayPal"},
+                new ContributionMethod { Name = "Cash"},
+                new ContributionMethod { Name = "Wire Transfer"},
+            };
+            if (!context.ContributionMethods.Any())
+            {
+                foreach (ContributionMethod c in contributionMethods)
+                {
+                    context.ContributionMethods.Add(c);
+                }
+                context.SaveChanges();
+            }
+
+            /*******************************************/
+
+            var contributions = new Contribution[]
+           {
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=50, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=60, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "PayPal").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=70, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Credit Card").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=40, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+                 new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=50, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=60, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "PayPal").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=70, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Credit Card").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=40, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+                 new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=50, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=60, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "PayPal").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=70, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Credit Card").ContributionMethodID},
+                new Contribution { MemberID = members.FirstOrDefault().MemberID, Amount=40, ContributionDate=DateTime.Now, ContributionMethodID=contributionMethods.Single(s => s.Name == "Cash").ContributionMethodID},
+           };
+            if (!context.Contributions.Any())
+            {
+                foreach (Contribution c in contributions)
+                {
+                    context.Contributions.Add(c);
                 }
                 context.SaveChanges();
             }

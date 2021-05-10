@@ -1,0 +1,38 @@
+﻿@using MemberShipApp.Models.DTO
+@model MemberShipApp.Models.DTO.ContributionDto
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@{
+    MemberDto member = ViewBag.Member;
+ }
+    <form asp-action="CreateContribution" id="createEditContributionForm">
+        <input type="hidden" asp-for="MemberID" value="@member.MemberID" />
+        <input type="hidden" asp-for="StateID" value="@member.StateID" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <h2>Member Name:   @member.FirstName  @member.FirstName</h2>
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            <label asp-for="ContributionMethodID" class="control-label"></label>
+            <select asp-for="ContributionMethodID" class="form-control" asp-items="ViewBag.ContributionMethodID"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Amount" class="control-label"></label>
+            <input asp-for="Amount" class="form-control" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+        @*<div class="form-group">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>*@
+    </form>   
+
+@*<div>
+    <a asp-action="Index">Back to List</a>
+</div>*@
+

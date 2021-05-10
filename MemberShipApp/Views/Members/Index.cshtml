@@ -1,83 +1,384 @@
-﻿@model IEnumerable<MemberShipApp.Models.DTO.MemberDto>
-
+﻿
+@model MemberShipApp.Models.MemberContributionView
 @{
     ViewData["Title"] = "Index";
+    var error = ViewBag.Error;
+    var regions = Model.Countries.Where(b=>b.CountryID==Model.SelectedCountryID).SelectMany(s => s.Regions);
+    var states = regions.FirstOrDefault(s => s.RegionID == Model.SelectedRegionID);
 }
-
-<h2>Index</h2>
-
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Member</a>
+    @*<a id="createEditGradeModal" data-toggle="modal"  asp-action="Create" data-target="#dialogSet" class="btn btn-primary">
+        Add Grade
+    </a>*@
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Code)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Position)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.State)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Position.PositionID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.State.StateID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MemberID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MemberID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MemberID">Delete</a>
-            </td>
-        </tr>
+<p class="alert-danger"> @ViewBag.Error</p>
+<form id="formSelect">
+    <div class="row jumbotron jumbotron-fluid">
+        <div class="col-md-3">
+            <div>Select Year</div>
+            <select id="year" class="form-control" asp-items="ViewBag.Years"></select>
+            @*<select class="form-control  bg-primary" id="selectYear"></select>*@
+        </div>
+        <div class="col-md-3">
+            <div>Select Country</div>
+            @Html.DropDownList("countryID",
+                                Model.Countries.Select(s => new SelectListItem
+                                     {
+                                         Text = s.Name,
+                                         Value = s.CountryID.ToString(),
+                                    Selected = s.CountryID == Model.SelectedCountryID
+                                     }).OrderBy(i => i.Text),
+                                 "- Please select your country -",
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     @name = "Countries"
+                                 }
+               )
+        </div>
+        <div class="col-md-3">
+            <div>Select Region</div>
+            @*<select id="selectRegion" class="form-control  bg-primary">
+                <option value="0">Search By Region</option>
+                @foreach (var region in regions)
+                {
+                    <option selected="@Model.SelectedRegionID" value="@region.RegionID">@region.Name</option>
+                }
+            </select>*@
+
+            @Html.DropDownList("selectRegion",
+                                regions.Select(s => new SelectListItem
+                                     {
+                                         Text = s.Name,
+                                         Value = s.RegionID.ToString(),
+                                    Selected = s.RegionID == Model.SelectedRegionID
+                                     }).OrderBy(i => i.Text),
+                                 "- Please select your region -",
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     @name = "Regions"
+                                 }
+               )
+        </div>
+        <div class="col-md-3">
+            <div>Select State</div>
+            <select class="form-control  bg-primary" id="selectState">
+                <option value="0">Search By State</option>
+                @if (Model.SelectedRegionID != 0 && states!=null)
+                {
+                    @foreach (var state in states.States)
+                    {
+                        <option  value="@state.ID">@state.Name</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+</form>
+<div id="tableBody"></div>
+
+<partial name="~/Views/Shared/_PartialModal.cshtml" />
+
+@section scripts {
+    <script type="text/javascript">
+        var data = @Json.Serialize(@Model.SelectedMember);
+        var stripRegions = @Json.Serialize(regions);
+        //var stripCountries = @Json.Serialize(Model.Countries);
+        var members = @Json.Serialize(@Model.Members);
+        //console.log(stripCountries);
+        
+        $(document).ready(function () {
+            var filteredMembers = {};
+            if (@Model.SelectedRegionID!== 0) {
+                filteredMembers = filterRegion(@Model.SelectedRegionID);
+                console.log(filteredMembers);
+            }
+            if (@Model.SelectedStateID!== 0) {
+                filteredMembers = filterState(@Model.SelectedStateID);
+                console.log(filteredMembers);
+            }
+            if (filteredMembers.length != 0) {
+
+                $("#tableBody").load("/Members/IndexMember", { members: filteredMembers });
+            }
+            else {
+                $("#tableBody").html("<h5>There is no member registered in " + $("#countryID option:selected").text() +"</h5>");
+            }
+
+            if(data != null) {
+                var title = data.memberID != 0 ? "Update Member Information" : "Member Registration Form";
+                var isEdit = data.memberID != 0 ? true : false;
+                $("#modelContent").load("/Members/EditCreateError", { data:data, isEdit:isEdit });
+                //$("#dialogSet").appendTo("body").css("z-index", "2000").focus();
+
+                $("#title").text(title);
+                $("#dialogSet").modal('show').focus();
+
+            }
+
+            $("#saveChanges").click(function () {
+                if ($("#Amount").val() !== undefined) {
+                    contributionFormValidation("#createEditContributionForm");
+                }
+                else {
+                    formValidation("#EditForm");
+                }
+            });
+
+            $("#countryID").on('change', function () {
+                if ($("#countryID option:selected").val() === "") {
+                    $("#tableBody").html("<h5>Please select a country.</h5>");
+                    return;
+                }
+                var selectedValue = $("#year option:selected").val();
+                console.log(selectedValue);
+                var form = $("#formSelect");
+                form.append("<input type='hidden' name='year' value='" + selectedValue + "'/>");
+                form.submit();
+            });
+
+            $("#selectRegion").on('change', function () {
+                if ($("#selectRegion option:selected").val() === "") {
+                    //$("#tableBody").html("<h5>Please select a country.</h5>");
+                    return;
+                }
+                var selectedValue = $("#selectRegion option:selected").val();
+                console.log(selectedValue);
+
+                $.each(stripRegions, function (index, value) {
+                    if (value.regionID === parseInt(selectedValue)) {
+                        var city = "<option value=" + '' + "> Select State </option>";
+                        $("#selectState").html("");
+                        $.each(value.states, function (i, val) {
+                            city += '<option value="' + val.id + '">' + val.name + '</option>';
+                        });
+                        $("#selectState").html(city);
+                    }
+                });
+
+                var newMembers = filterRegion(selectedValue);
+                if (newMembers.length != 0) {
+                    $("#tableBody").load("/Members/IndexMember", { members: newMembers });
+                }
+                else {
+                    $("#tableBody").html("<h5>There is no member registered for " + $("#selectRegion option:selected").text() + " region </h5>");
+                }
+            });
+
+            $("#selectState").on('change', function () {
+                if ($("#selectState option:selected").val() === "") {
+                    //$("#tableBody").html("<h5>Please select a country.</h5>");
+                    return;
+                }
+                var selectedValue = $("#selectState option:selected").val();
+                console.log(selectedValue);
+                var newMembers = filterState(selectedValue);
+                if (newMembers.length != 0) {
+                    $("#tableBody").load("/Members/IndexMember", { members: newMembers });
+                }
+                else {
+                    $("#tableBody").html("<h5>There is no member registered for " + $("#selectState option:selected").text() + " state</h5>");
+                }
+            });
+
+            $("#year").on('change', function () {
+                var selectedValue = $("#year option:selected").val();
+                console.log(selectedValue);
+                var form = $("#formSelect");
+                form.append("<input type='hidden' name='year' value='" + selectedValue + "'/>");
+                form.submit();
+            });
+
+        });
+
+        function create() {
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("Create","Members")');
+            $("#title").text("Member Registration Form");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function edit(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("Edit","Members")?id=' + id);
+            $("#title").text("Update Member Information");
+            $("#dialogSet").modal('toggle');
+        }
+        function contribute(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("AddContribution","Members")?id=' + id);
+            $("#title").text("Member Contribution");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function details(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", true);
+            $("#modelContent").load('@Url.Action("Details","Members")?id=' + id);
+            $("#title").text("Member Detail");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function filterRegion(filterID) {
+            return newMembers = members.filter(function (member) {
+                return member.regionID == parseInt(filterID);
+            });
+        }
+        function filterState(filterID) {
+            return newMembers = members.filter(function (member) {
+                return member.stateID == parseInt(filterID);
+            });
+        }
+        function formValidation($id) {
+                $($id).validate({
+                    submitHandler: function (form) {
+                        //submit once validation rules are met
+                        form.submit();
+                    },
+                    rules: {
+                        FirstName: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        LastName: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        Email: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        Phone: {
+                            required: true,
+                            maxlength: 50
+                        },
+                        State: {
+                            required: true,
+                            maxlength: 10,
+                        },
+                        Position: {
+                            required: true,
+                            maxlength: 10,
+                        }
+                    },
+                    messages: {
+                        FirstName: {
+                            required: "First Name is required",
+                            maxlength: "Error: The max length for First Name is 50."
+                        },
+                        LastName: {
+                            required: "Last Name is required",
+                            maxlength: "Error: The max length for Last Name is 50."
+                        },
+                        Email: {
+                            required: "Email is required",
+                            maxlength: "Error: The max length for Email is 50."
+                        },
+                        Phone: {
+                            required: "Phone Number is required",
+                            maxlength: "Error: The max length for Phone Number is 50."
+                        },
+                        State: {
+                            required: "State is required",
+                            maxlength: "Error: The max length for state is 50."
+                        },
+                        Position: {
+                            required: "Position is required",
+                            maxlength: "Error: The max length for position is 50."
+                        },
+                    },
+                    highlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                        $(id_attr).removeClass('glyphicon-ok').addClass('glyphicon-remove');
+                    },
+                    unhighlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        $(id_attr).removeClass('glyphicon-remove').addClass('glyphicon-ok');
+                    },
+                    errorElement: 'span',
+                    errorClass: 'help-block',
+                    errorPlacement: function (error, element) {
+                        if (element.length) {
+                            error.insertAfter(element);
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    }
+                });
+                var form = $($id);
+                console.log(form);
+                var $valid = form.valid();
+                if (!$valid) {
+                    return false;
+                }
+                form.submit();
+                form.submit(function (e) {
+                    var $valid = form.valid();
+                    if (!$valid) {
+                        return false;
+                    }
+                });
+        }
+
+        function contributionFormValidation($id) {
+            $($id).validate({
+                submitHandler: function (form) {
+                    //submit once validation rules are met
+                    form.submit();
+                },
+                rules: {
+                    Amount: {
+                        required: true
+                    }
+                },
+                messages: {
+                    Amount: {
+                        required: "Amount is required",
+                        maxlength: "Error: The max length for First Name is 50."
+                    }
+                },
+                highlight: function (element) {
+                    var id_attr = "#" + $(element).attr("id") + "1";
+                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                    $(id_attr).removeClass('glyphicon-ok').addClass('glyphicon-remove');
+                },
+                unhighlight: function (element) {
+                    var id_attr = "#" + $(element).attr("id") + "1";
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                    $(id_attr).removeClass('glyphicon-remove').addClass('glyphicon-ok');
+                },
+                errorElement: 'span',
+                errorClass: 'help-block',
+                errorPlacement: function (error, element) {
+                    if (element.length) {
+                        error.insertAfter(element);
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+            var form = $($id);
+            console.log(form);
+            var $valid = form.valid();
+            if (!$valid) {
+                return false;
+            }
+            form.submit();
+            form.submit(function (e) {
+                var $valid = form.valid();
+                if (!$valid) {
+                    return false;
+                }
+            });
+        }
+    </script>
 }
-    </tbody>
-</table>

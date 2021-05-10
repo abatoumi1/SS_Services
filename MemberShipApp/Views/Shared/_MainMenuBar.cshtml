@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
+    bool isLoggIn = SignInManager.IsSignedIn(User);
+}
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div id="BannerBar">
+            </div>
+            <div id="MenuBar">
+                <ul>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @*<li><a asp-area="" asp-controller="Members" asp-action="Index">Members</a></li>*@
+                    @if (isLoggIn)
+                    {
+                    <li id="Config">
+                        <a href="#">Settings</a>
+                        <ul>
+                            <li><a asp-area="" asp-controller="Countries" asp-action="Index">Country</a></li>
+                            <li><a asp-area="" asp-controller="States" asp-action="Index">State</a></li>
+                            <li><a asp-area="" asp-controller="Regions" asp-action="Index">Region</a></li>
+                            <li><a asp-area="" asp-controller="Positions" asp-action="Index">Position</a></li>
+                        </ul>
+                    </li>
+                    }
+                    <li id="Schedules">
+                        <a href="#">DashBoard</a>
+                        <ul>
+                            <li><a asp-area="" asp-controller="DashBoard" asp-action="AssignStatesToRegion">DashBoard</a></li>
+
+                            <li><a asp-area="" asp-controller="Members" asp-action="Index">Members</a></li>
+
+                            <li><a asp-area="" asp-controller="Contributions" asp-action="Indexation">Contributions</a></li>
+                        </ul>
+                    </li>
+
+                    @if (isLoggIn)
+                    {
+
+
+                        <li>
+                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index"
+                               title="Manage">Hello @User.Identity.Name!</a>
+                        </li>
+                        <li >
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
+                                  asp-route-returnUrl="@Url.Page("/", new { area = "" })"
+                                  method="post">
+                                <button type="submit">Logout</button>
+                            </form>
+                        </li>
+
+                    }
+                    else
+                    {
+                        
+                        <li><a class="menuRight" asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                        <li><a class="menuRight" asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                            
+                    }
+
+                </ul>
+                
+            </div>
+        </div>
+    </nav>

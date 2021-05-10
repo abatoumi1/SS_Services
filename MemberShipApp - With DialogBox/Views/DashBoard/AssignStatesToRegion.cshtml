@@ -1,0 +1,63 @@
+﻿@model MemberShipApp.Models.StatesByRegionsView
+
+@{
+    ViewData["Title"] = "AssignStatesToRegion";
+}
+
+<h2>AssignStatesToRegion</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form id="form" asp-action="AssignStatesToRegion">
+    <div class="form-group">
+        <select asp-for="CountryID" class="form-control" asp-items="ViewBag.CountryID"></select>
+    </div>
+
+</form>
+
+
+    @foreach (var item in Model.regions.ToList())
+    {
+        <br />
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:10%" scope="col" colspan="6">States Assigned to @item.Name region</th>
+                    </tr>
+                </thead>
+                <tr>
+                    @{
+                        int iState = 0;
+                        TupleData[] states = item.StateIDs.ToArray();
+                        int statesCount = states.Count();
+                        int satesOverflowColumns = statesCount % 6;
+
+                        for (int iCol = 1; iCol <= 6; ++iCol)
+                        {
+                            int chunkSize = statesCount / 6 + (satesOverflowColumns > 0 && iCol <= satesOverflowColumns ? 1 : 0);
+                            <td>
+                                @for (int i = 0; iState < statesCount && i < chunkSize; ++iState, ++i)
+                                {
+                                    @states[iState].Name <br />
+                                }
+                            </td>
+                        }
+                    }
+                </tr>
+            </table>
+        </div>
+    }
+
+
+@section scripts {
+    <script type="text/javascript">            
+                $("#CountryID").change(function () {
+                    var form = $("form");
+                    form.append("<input type='text' type='hidden' name='CountryID' value='"+$("#CountryID").val()+"'/>");
+                    form.submit();
+                });
+    </script>
+}

@@ -28,7 +28,7 @@ namespace MemberShipApp.Controllers
             var id = countries.First().CountryID;
             var data = new StatesByRegionsView
             {
-                regions = await _regionService.GetAllWithCountrID(id),
+                regions = await _regionService.GetAllRegionByCountryID(id),
                 CountryID = id
             };
 
@@ -43,7 +43,7 @@ namespace MemberShipApp.Controllers
 
             var data = new StatesByRegionsView
             {
-                regions = await _regionService.GetAllWithCountrID(CountryID),
+                regions = await _regionService.GetAllRegionByCountryID(CountryID),
                 CountryID = CountryID
             };
 
@@ -51,7 +51,7 @@ namespace MemberShipApp.Controllers
             return View(data);
         }
 
-        public async Task<IActionResult> Assign()
+        public IActionResult Assign()
         {
             return View(new RegionDto { });
         }

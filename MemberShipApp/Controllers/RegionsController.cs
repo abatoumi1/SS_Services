@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MemberShipApp.Models;
-using UniversityApp.Data;
+
 using MemberShipApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MemberShipApp.Controllers
 {
+    [Authorize]
     public class RegionsController : Controller
     {
         private readonly IRegionServices _regionService;
@@ -26,7 +28,8 @@ namespace MemberShipApp.Controllers
         // GET: Regions
         public async Task<IActionResult> Index()
         {
-            
+            var countries = await _countryService.GetAllCountries();
+            ViewData["Countries"] = countries;
             return View(await _regionService.GetAllRegions());
         }
 

@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Index";
+    List<CountryDto> countriesList = ViewBag.Countries;
+    var countries = countriesList.ToDictionary(s => s.CountryID);
 }
 
 <h2>Index</h2>
@@ -19,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CountryID)
+                Country Name
             </th>
             <th></th>
         </tr>
@@ -34,7 +36,7 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CountryID)
+                @countries[item.CountryID].Name
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.RegionID">Edit</a> |

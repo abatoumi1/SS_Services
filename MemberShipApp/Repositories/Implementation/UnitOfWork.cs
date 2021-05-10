@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MemberShipApp.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UniversityApp.Data;
+
 
 namespace MemberShipApp.Repositories
 {
@@ -14,6 +15,7 @@ namespace MemberShipApp.Repositories
         private StateRepository _stateRepository;
         private PositionRepository _positionRepository;
         private MemberRepository _memberRepository;
+        private ContributionRepository _contributionRepository;
         public UnitOfWork(MemberShipContext context)
         {
             this._context = context;
@@ -28,7 +30,7 @@ namespace MemberShipApp.Repositories
         public IPositionRepository Positions => _positionRepository = _positionRepository ?? new PositionRepository(_context);
 
         public IMemberRepository Members => _memberRepository = _memberRepository ?? new MemberRepository(_context);
-
+        public IContributionRepository Contributions => _contributionRepository = _contributionRepository ?? new ContributionRepository(_context);
         public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();

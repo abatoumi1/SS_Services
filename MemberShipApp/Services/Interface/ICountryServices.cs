@@ -8,8 +8,9 @@ namespace MemberShipApp.Services
 {
     public interface ICountryServices
     {
-        Task<IEnumerable<Country>> GetAllWithRegions();
-        Task<IEnumerable<Country>> GetAllCountries();
+        Task<IEnumerable<CountryTuplate>> GetAllCountryWithConnect();
+        Task<CountryTuplate> GetAllCountryWithConnect(int countryID);
+        Task<IEnumerable<CountryDto>> GetAllCountries();
         Task<Country> GetCountryById(int id);
         Task<ReturnResponse> CreateCountry(Country newCountry);
         Task<ReturnResponse> UpdateCountry(int id, Country country);

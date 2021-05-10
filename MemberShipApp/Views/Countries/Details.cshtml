@@ -1,29 +1,58 @@
-﻿@model MemberShipApp.Models.Country
+﻿@model MemberShipApp.Models.CountryTuplate
 
 @{
     ViewData["Title"] = "Details";
 }
-
-<h2>Details</h2>
-
-<div>
-    <h4>Country</h4>
-    <hr />
+<div>   
+    @*<hr />*@
     <dl class="dl-horizontal">
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.Code)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Code)
-        </dd>
+        </dd>*@
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            Country Name
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
 </div>
+
+@foreach (var item in Model.Regions.ToList())
+{
+    <br />
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:10%" scope="col" colspan="6">States Assigned to @item.Name region</th>
+                </tr>
+            </thead>
+            <tr>
+                @{
+                    int iState = 0;
+                    TupleData[] states = item.States.ToArray();
+                    int statesCount = states.Count();
+                    int satesOverflowColumns = statesCount % 6;
+
+                    for (int iCol = 1; iCol <= 6; ++iCol)
+                    {
+                        int chunkSize = statesCount / 6 + (satesOverflowColumns > 0 && iCol <= satesOverflowColumns ? 1 : 0);
+                        <td>
+                            @for (int i = 0; iState < statesCount && i < chunkSize; ++iState, ++i)
+                            {
+                                @states[iState].Name <br />
+                            }
+                        </td>
+                    }
+                }
+            </tr>
+        </table>
+    </div>
+}
 <div>
     <a asp-action="Edit" asp-route-id="@Model.CountryID">Edit</a> |
     <a asp-action="Index">Back to List</a>

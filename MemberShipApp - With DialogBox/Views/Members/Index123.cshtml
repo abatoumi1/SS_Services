@@ -1,0 +1,266 @@
+﻿
+@model MemberShipApp.Models.MemberView
+
+@{
+    ViewData["Title"] = "Index";
+    var error = ViewBag.Error;
+    
+}
+
+<p>
+    <a onclick="create()">Create New Member</a>
+</p>
+
+<p class="alert-danger"> @ViewBag.Error</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Last Name</a>
+            </th>
+            <th>
+                First Name
+            </th>
+
+            <th>
+                Phone Number
+            </th>
+            <th>
+                Email
+            </th>
+
+            <th>
+                Position
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["StateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">State</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PageList)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.PositionID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StateID)
+                </td>
+                <td>
+                    <a onclick="edit(@item.MemberID)">Edit</a> |
+                    <a onclick="details(@item.MemberID)">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MemberID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.PageList.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.PageList.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageList.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageList.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
+<partial name="~/Views/Shared/_PartialModal.cshtml" />
+
+
+<div id="DialogOverlay"></div>
+<div id="DialogLoading"></div>
+
+<div id="Dialog" style="width:420px; height:290px">
+    <div id="detailBox"></div>
+    <div id="DialogButtons">
+        <a href="#" id="DialogCancel" class="Button">Cancel</a><a href="#" id="DialogConfirm" class="Button">Confirm</a>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var data = @Json.Serialize(@Model.SelectedMember);
+        $(document).ready(function () {
+            //if(error!= null) {
+            //    $("#modelContent").html(error);
+            //    $("#title").text("Error");
+            //    $("#dialogSet").modal('toggle');
+            //}
+
+            if(data != null) {
+                var title = data.memberID != 0 ? "Update Member Information" : "Member Registration Form";
+                var isEdit = data.memberID != 0 ? true : false;
+                $("#modelContent").load("/Members/EditCreateMember", { data, isEdit});
+                $("#title").text(title);
+                $("#dialogSet").modal('toggle');
+            }
+
+            $("#saveChanges").click(function () {
+                formValidation("#EditForm");
+            });
+        });
+
+        function create() {
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("CreateMember","Members")');
+            $("#title").text("Member Registration Form");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function edit(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", false);
+            $("#modelContent").load('@Url.Action("EditMember","Members")?id=' + id);
+            $("#title").text("Update Member Information");
+            $("#dialogSet").modal('toggle');
+        }
+
+        function details(id) {
+            console.log(id);
+            $("#saveChanges").attr("disabled", true);
+            $("#modelContent").load('@Url.Action("MemberDetails","Members")?id=' + id);
+            $("#title").text("Member Detail");
+            $("#dialogSet").modal('toggle');
+        }
+
+
+
+        function formValidation($id) {
+                $($id).validate({
+                    submitHandler: function (form) {
+                        //submit once validation rules are met
+                        form.submit();
+                    },
+                    rules: {
+                        FirstName: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        LastName: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        Email: {
+                            minlength: 3,
+                            maxlength: 50,
+                            required: true
+                        },
+                        Phone: {
+                            required: true,
+                            maxlength: 50
+                        },
+                        State: {
+                            required: true,
+                            maxlength: 10,
+                        },
+                        Position: {
+                            required: true,
+                            maxlength: 10,
+                        }
+                    },
+                    messages: {
+                        FirstName: {
+                            required: "First Name is required",
+                            maxlength: "Error: The max length for First Name is 50."
+                        },
+                        LastName: {
+                            required: "Last Name is required",
+                            maxlength: "Error: The max length for Last Name is 50."
+                        },
+                        Email: {
+                            required: "Email is required",
+                            maxlength: "Error: The max length for Email is 50."
+                        },
+                        Phone: {
+                            required: "Phone Number is required",
+                            maxlength: "Error: The max length for Phone Number is 50."
+                        },
+                        State: {
+                            required: "State is required",
+                            maxlength: "Error: The max length for state is 50."
+                        },
+                        Position: {
+                            required: "Position is required",
+                            maxlength: "Error: The max length for position is 50."
+                        },
+                    },
+                    highlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                        $(id_attr).removeClass('glyphicon-ok').addClass('glyphicon-remove');
+                    },
+                    unhighlight: function (element) {
+                        var id_attr = "#" + $(element).attr("id") + "1";
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        $(id_attr).removeClass('glyphicon-remove').addClass('glyphicon-ok');
+                    },
+                    errorElement: 'span',
+                    errorClass: 'help-block',
+                    errorPlacement: function (error, element) {
+                        if (element.length) {
+                            error.insertAfter(element);
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    }
+                });
+                var form = $($id);
+                console.log(form);
+                var $valid = form.valid();
+
+                if (!$valid) {
+                    return false;
+                }
+                form.submit();
+
+                form.submit(function (e) {
+
+                    var $valid = form.valid();
+
+                    if (!$valid) {
+                        return false;
+                    }
+
+                });
+           
+        }
+    </script>
+}

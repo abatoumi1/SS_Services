@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SportServiceApp</name>
+    </assembly>
+    <members>
+        <member name="M:SportServiceApp.Controllers.AccountController.Login(SportServiceApp.Controllers.LoginViewModel,System.String)">
+            <summary>
+            Login
+            </summary>
+            <param name="creds"></param>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.AccountController.Login(SportServiceApp.Controllers.LoginViewModel)">
+            <summary>
+            Login
+            </summary>
+            <param name="creds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.AccountController.Logout">
+            <summary>
+            Log Out
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.CategoriesController.Create(SportServiceApp.Core.Commands.Categories.CreateCategoryCommand)">
+            <summary>
+            Creates a New Product.
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.CategoriesController.GetAll">
+            <summary>
+            Gets all Products.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.CategoriesController.GetById(System.Int64)">
+            <summary>
+            Gets Product Entity by Id.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.CategoriesController.Delete(System.Int64)">
+            <summary>
+            Deletes Product Entity based on Id.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.CategoriesController.Update(System.Int64,SportServiceApp.Core.Commands.Categories.PutCategoryCommand)">
+            <summary>
+            Updates the Product Entity based on Id.   
+            </summary>
+            <param name="id"></param>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.ProductsController.Create(SportServiceApp.Core.Commands.Products.CreateProductCommand)">
+            <summary>
+            Creates a New Product.
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.ProductsController.GetAll">
+            <summary>
+            Gets all Products.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.ProductsController.GetById(System.Int64)">
+            <summary>
+            Gets Product Entity by Id.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.ProductsController.Delete(System.Int64)">
+            <summary>
+            Deletes Product Entity based on Id.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.ProductsController.Update(System.Int64,SportServiceApp.Core.Commands.Products.PutProductCommand)">
+            <summary>
+            Updates the Product Entity based on Id.   
+            </summary>
+            <param name="id"></param>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SportServiceApp.Controllers.WeatherForecastController.Get">
+            <summary>
+            Get Weather For Broadcast
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

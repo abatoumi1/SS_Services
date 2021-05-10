@@ -1,0 +1,60 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div id="BannerBar">
+            </div>
+            <div class="navbar-collapse collapse" id="MenuBar">
+                <ul>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Members" asp-action="Index">Members</a></li>
+                    
+                    <li id="Config">
+                        <a href="#">Settings</a>
+                        <ul>
+                            <li><a asp-area="" asp-controller="Countries" asp-action="Index">Country</a></li>
+                            <li><a asp-area="" asp-controller="States" asp-action="Index">State</a></li>
+                            <li><a asp-area="" asp-controller="Regions" asp-action="Index">Region</a></li>
+                            <li><a asp-area="" asp-controller="Positions" asp-action="Index">Position</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="Schedules">
+                        <a href="#">DashBoard</a>
+                        <ul>
+                            <li><a asp-area="" asp-controller="DashBoard" asp-action="AssignStatesToRegion">DashBoard</a></li>
+
+                            <li><a asp-area="" asp-controller="Members" asp-action="Index">Members</a></li>
+
+                            <li><a asp-area="" asp-controller="Contributions" asp-action="Indexation">Contributions</a></li>
+                        </ul>
+                    </li>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" id="logoutForm" class="navbar-right">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li>
+                                    <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+                                </li>
+                                <li>
+                                    <button type="submit" class="btn btn-link navbar-btn navbar-link">Logout</button>
+                                </li>
+                            </ul>
+                        </form>
+                    }
+                    else
+                    {
+                        <li><a asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                        <li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>

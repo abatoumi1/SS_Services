@@ -1,9 +1,10 @@
-﻿using MemberShipApp.Models;
+﻿using MemberShipApp.Data;
+using MemberShipApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UniversityApp.Data;
+
 
 namespace MemberShipApp.Repositories
 {

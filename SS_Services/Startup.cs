@@ -111,7 +111,7 @@ namespace SS_Services
             app.UseMvc();
 
             //SeedData.SeedDatabase(app.ApplicationServices
-            //   .GetRequiredService<DataContext>());
+            //  .GetRequiredService<DataContext>());
             //IdentitySeedData.SeedDatabase(app);
         }
     }

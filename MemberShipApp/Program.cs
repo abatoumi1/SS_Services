@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+
 using MemberShipApp.Data;
+using MemberShipApp.Extensions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using UniversityApp.Data;
+using Serilog;
 
 namespace MemberShipApp
 {
@@ -17,9 +15,28 @@ namespace MemberShipApp
     {
         public static void Main(string[] args)
         {
-            var host = CreateWebHostBuilder(args).Build();
-            CreateDbIfNotExists(host);
-            host.Run();
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+            try {
+                Log.Information("Application Starting Up.");
+                var host = CreateWebHostBuilder(args).Build();
+                WebHost.CreateDefaultBuilder(args).UseSetting(WebHostDefaults.DetailedErrorsKey, "true");
+                CreateDbIfNotExists(host);
+                host.Run();
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal(ex,"Application failed to start correctly.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+            
         }
 
         private static void CreateDbIfNotExists(IWebHost host)
@@ -31,10 +48,12 @@ namespace MemberShipApp
                 try
                 {
                     var context = services.GetRequiredService<MemberShipContext>();
-                    context.Database.EnsureCreated();
+                   // context.Database.EnsureCreated();
 
                     // using ContosoUniversity.Data; 
                     DbInitializer.Initialize(context);
+
+                   
                 }
                 catch (Exception ex)
                 {
@@ -47,6 +66,7 @@ namespace MemberShipApp
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            .UseSerilog()
+            .UseStartup<Startup>();
     }
 }

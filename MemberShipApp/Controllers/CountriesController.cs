@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MemberShipApp.Models;
-using UniversityApp.Data;
+
 using MemberShipApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MemberShipApp.Controllers
 {
+    [Authorize]
     public class CountriesController : Controller
     {
         private readonly ICountryServices _service;
@@ -34,7 +36,7 @@ namespace MemberShipApp.Controllers
                 return NotFound();
             }
 
-            var country = await _service.GetCountryById(id.Value);
+            var country = await _service.GetAllCountryWithConnect(id.Value);    //GetCountryById(id.Value);
             if (country == null)
             {
                 return NotFound();

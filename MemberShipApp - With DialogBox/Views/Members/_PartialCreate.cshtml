@@ -1,0 +1,136 @@
+﻿@using System.Web;
+@model MemberShipApp.Models.DTO.MemberDto
+
+@{
+    ViewData["Title"] = "Create";
+
+    List<CountryTuplate> countries = ViewBag.Countries;
+
+}
+
+<hr />
+<div class="alert-danger"> @HttpUtility.HtmlDecode(@Model?.ErrorMessage)</div>
+<form asp-action="Create" id="EditForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @*<input type="hidden" asp-for="MemberID" />*@
+    @*<input type="hidden" asp-for="Code" />*@
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label asp-for="Code" class="control-label"></label>
+            <input asp-for="Code" class="form-control" />
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label asp-for="FirstName" class="control-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="LastName" class="control-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label asp-for="Phone" class="control-label"></label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6 ">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label asp-for="PositionID" class="control-label"></label>
+            <select asp-for="PositionID" class="form-control" asp-items="ViewBag.PositionID"></select>
+            <span asp-validation-for="PositionID" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label class="control-label">Country</label>
+            @Html.DropDownList("country1ID",
+                                @countries.Select(s => new SelectListItem
+                                     {
+                                         Text = s.Name,
+                                         Value = s.CountryID.ToString(),
+                                     }).OrderBy(i => i.Text),
+                                 "- Please select your country -",
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     @name = "Countries"
+                                 }
+               )
+        </div>
+
+        <div class="form-group col-md-4">
+            <label class="control-label">Region</label>
+            <select class="form-control  bg-primary" id="SelectCreateRegion">
+                <option value="0">Select Region</option>
+            </select>
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="StateID" class="control-label"></label>
+            <select asp-for="StateID" class="form-control" id="SelectCreateState">
+                <option value="0">Select State</option>
+            </select>
+
+        </div>
+    </div>
+    @*<div class="row">
+            <div class="form-group col-md-6">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>*@
+</form>
+
+
+@*@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}*@
+@section scripts {
+    <script type="text/javascript">
+       
+        var stripCountries = @Json.Serialize(countries);
+       
+        console.log(stripCountries);
+
+        $(document).ready(function () {
+            
+            $("#SelectCreateCountry").on('change', function () {
+                var selectedValue = $("#SelectCreateCountry option:selected").val();
+                console.log(selectedValue);
+
+                $.each(stripCountries, function (index, value) {
+                    if (value.countryID === parseInt(selectedValue)) {
+                        var city = "<option value=" + '0' + "> Select Region </option>";
+                        $("#SelectCreateRegion").html("");
+                        $.each(value.regions, function (i, val) {
+                            city += '<option value="' + val.id + '">' + val.name + '</option>';
+                        });
+                        $("#SelectCreateRegion").html(city);
+                    }
+                });
+
+            });
+
+        });
+
+        
+    </script>
+}

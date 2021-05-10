@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -12,15 +9,17 @@ using Microsoft.EntityFrameworkCore;
 using MemberShipApp.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UniversityApp.Data;
 using MemberShipApp.Services;
 using MemberShipApp.Repositories;
 using AutoMapper;
+using MemberShipApp.Extensions;
+using Serilog;
 
 namespace MemberShipApp
 {
     public class Startup
     {
+        private DBUpdate db;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,26 +37,36 @@ namespace MemberShipApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<MemberShipContext>(options =>
-               options.UseSqlServer(
-                   Configuration.GetConnectionString("MemberShip")));
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("Identity")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                services.AddDbContext<MemberShipContext>(options =>
+            options.UseSqlServer(
+                Configuration.GetConnectionString("MemberShipDBPro")));
+                services.AddDefaultIdentity<IdentityUser>()
+                    .AddEntityFrameworkStores<MemberShipContext>();
+            }
+            else
+            {
+                services.AddDbContext<MemberShipContext>(options =>
+            options.UseSqlServer(
+                Configuration.GetConnectionString("MemberShipDB")));
+                services.AddDefaultIdentity<IdentityUser>()
+                    .AddEntityFrameworkStores<MemberShipContext>();
+            }
+            //migration
+            services.BuildServiceProvider().GetService<MemberShipContext>().Database.Migrate();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAutoMapper(typeof(Startup));
-
+            services.AddMemoryCache();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ICountryServices, CountryServices>();
             services.AddTransient<IStateServices, StateServices>();
             services.AddTransient<IRegionServices, RegionServices>();
             services.AddTransient<IPositionServices, PositionServices>();
             services.AddTransient<IMemberServices, MemberServices>();
+            services.AddTransient<IContributionServices, ContributionServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,9 +82,11 @@ namespace MemberShipApp
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            db = new DBUpdate(Configuration);
+            db.RunDBUpdate();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSerilogRequestLogging();
             app.UseCookiePolicy();
 
             app.UseAuthentication();
